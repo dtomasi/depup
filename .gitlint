@@ -1,0 +1,6 @@
+[general]
+ignore = W503
+
+[title]
+max-length = 72
+match = ^(build|ci|docs|feat|fix|perf|refactor|style|test|chore)(\(.+\))?: .+$

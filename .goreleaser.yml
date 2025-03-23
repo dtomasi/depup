@@ -1,0 +1,41 @@
+project_name: depup
+version: 2
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: .
+    binary: depup
+    ldflags:
+      - -X github.com/dtomasi/depup/cmd.version={{ .Tag }}
+      - -X github.com/dtomasi/depup/cmd.commit={{ .Commit }}
+      - -X github.com/dtomasi/depup/cmd.date={{ .Date }}
+
+archives:
+  - format: binary
+    name_template: >-
+      {{ .ProjectName }}-{{ .Os }}-{{ .Arch }}
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: dtomasi
+    name: depup
