@@ -32,6 +32,14 @@ func (u *HclFileUpdater) Supports(fileExtension string) bool {
 	return ok
 }
 
+func (u *HclFileUpdater) GetSupportedExtensions() []string {
+	extensions := make([]string, 0, len(u.supportedFileExtensions))
+	for ext := range u.supportedFileExtensions {
+		extensions = append(extensions, ext)
+	}
+	return extensions
+}
+
 func (u *HclFileUpdater) UpdateFile(filePath string, packages []Package, options FileUpdaterOptions) (string, bool, error) {
 	// Read file and prepare data
 	lines, endsWithNewline, err := u.readFileContent(filePath)

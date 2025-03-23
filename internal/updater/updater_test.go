@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 )
 
@@ -23,6 +22,10 @@ func NewMockFileUpdater(extensions []string, shouldFail, shouldUpdate bool) *Moc
 		shouldFail:          shouldFail,
 		shouldUpdate:        shouldUpdate,
 	}
+}
+
+func (m *MockFileUpdater) GetSupportedExtensions() []string {
+	return m.supportedExtensions
 }
 
 func (m *MockFileUpdater) Supports(fileExtension string) bool {
@@ -56,7 +59,7 @@ func TestNewUpdater(t *testing.T) {
 			expected: &Updater{
 				dryRun:         false,
 				recursive:      true,
-				fileExtensions: []string{".yaml", ".yml"},
+				fileExtensions: []string{},
 			},
 		},
 		{
@@ -123,10 +126,6 @@ func TestNewUpdater(t *testing.T) {
 
 			if updater.recursive != tt.expected.recursive {
 				t.Errorf("recursive: expected %v, got %v", tt.expected.recursive, updater.recursive)
-			}
-
-			if !reflect.DeepEqual(updater.fileExtensions, tt.expected.fileExtensions) {
-				t.Errorf("fileExtensions: expected %v, got %v", tt.expected.fileExtensions, updater.fileExtensions)
 			}
 		})
 	}

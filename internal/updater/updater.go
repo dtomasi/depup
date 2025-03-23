@@ -25,6 +25,9 @@ type FileUpdater interface {
 	// Supports checks if the updater supports the given file extension
 	Supports(fileExtension string) bool
 
+	// GetSupportedExtensions returns a list of file extensions supported by the updater
+	GetSupportedExtensions() []string
+
 	// UpdateFile updates the dependencies in the specified file
 	// Returns the updated content, whether changes were made, and any error
 	UpdateFile(filePath string, packages []Package, options FileUpdaterOptions) (string, bool, error)
@@ -81,7 +84,11 @@ func NewUpdater(options ...Option) *Updater {
 		// Default values
 		dryRun:         false,
 		recursive:      true,
-		fileExtensions: []string{".yaml", ".yml"},
+		fileExtensions: []string{},
+	}
+
+	for _, updater := range u.updaters {
+		u.fileExtensions = append(u.fileExtensions, updater.GetSupportedExtensions()...)
 	}
 
 	// Apply all provided options to override defaults
