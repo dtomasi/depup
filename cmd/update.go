@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var packagePattern = regexp.MustCompile(`^[^@]+@v?[\d]+\.[\d]+\.[\d]+$`) // Regular expression to validate package format
+var packagePattern = regexp.MustCompile(`^[^=]+=v?[\d]+\.[\d]+\.[\d]+$`) // Regular expression to validate package format
 
 // updateCmd represents the update command for updating dependencies
 var updateCmd = &cobra.Command{
@@ -33,7 +33,7 @@ var updateCmd = &cobra.Command{
 			}
 
 			// Split the package into name and version
-			parts := strings.Split(pkg, "@")
+			parts := strings.Split(pkg, "=")
 			packages = append(packages, updater.Package{Name: parts[0], Version: parts[1]})
 		}
 
