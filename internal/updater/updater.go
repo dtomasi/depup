@@ -1,17 +1,42 @@
 package updater
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
+
+var /* const */ namePattern = regexp.MustCompile(`^[a-zA-Z0-9-]+$`)
+var /* const */ versionPattern = regexp.MustCompile(`(["']?)(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?(["']?)`)
 
 // Package represents a dependency package with a name and version
 // to be updated in configuration files
 type Package struct {
 	Name    string // Name of the package identifier
 	Version string // Version of the package (semantic version format)
+}
+
+func (p *Package) String() string {
+	return fmt.Sprintf("%s=%s", p.Name, p.Version)
+}
+
+func (p *Package) Validate() error {
+	var errs []error
+
+	if !versionPattern.MatchString(p.Version) {
+		errs = append(errs, fmt.Errorf("invalid version format: %s", p.Version))
+	}
+	if !namePattern.MatchString(p.Name) {
+		errs = append(errs, fmt.Errorf("invalid name format: %s", p.Name))
+	}
+	if len(errs) == 0 {
+		return nil
+	}
+
+	return errors.Join(errs...)
 }
 
 // FileUpdaterOptions contains configuration for file update operations
@@ -102,6 +127,17 @@ func NewUpdater(options ...Option) *Updater {
 // Update processes the entrypoint (file or directory) and updates dependencies
 // based on the provided packages list and configuration options
 func (u *Updater) Update(entrypoint string, packages []Package) error {
+	var errs []error
+	for _, pkg := range packages {
+		if err := pkg.Validate(); err != nil {
+			errs = append(errs, fmt.Errorf("invalid package %s: %w", pkg, err))
+		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("invalid packages: %w", errors.Join(errs...))
+	}
+
 	// Verify the entrypoint exists
 	fileInfo, err := os.Stat(entrypoint)
 	if err != nil {

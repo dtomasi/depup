@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/dtomasi/depup/internal/updater"
 	"github.com/spf13/cobra"
-	"regexp"
-	"strings"
 )
-
-var packagePattern = regexp.MustCompile(`^[^=]+=v?[\d]+\.[\d]+\.[\d]+$`) // Regular expression to validate package format
 
 // updateCmd represents the update command for updating dependencies
 var updateCmd = &cobra.Command{
@@ -27,11 +25,6 @@ var updateCmd = &cobra.Command{
 
 		var packages []updater.Package
 		for _, pkg := range rawPackages {
-			// Validate the package format (IDENTIFIER@SEMVER_VERSION)
-			if !packagePattern.MatchString(pkg) {
-				return fmt.Errorf("invalid package format: %s", pkg)
-			}
-
 			// Split the package into name and version
 			parts := strings.Split(pkg, "=")
 			packages = append(packages, updater.Package{Name: parts[0], Version: parts[1]})
@@ -61,8 +54,8 @@ func init() {
 	// Flag to specify recursive lookup for files in a directory
 	updateCmd.Flags().BoolP("recursive", "r", false, "Make depup lookup for files recursively, if a directory is passed as argument")
 
-	// Flag to specify packages to update in the format IDENTIFIER@SEMVER_VERSION
-	updateCmd.Flags().StringArrayP("package", "p", []string{}, "Specify dependencies to update in the format IDENTIFIER@SEMVER_VERSION (-p package@1.2.3)")
+	// Flag to specify packages to update in the format IDENTIFIER=SEMVER_VERSION
+	updateCmd.Flags().StringArrayP("package", "p", []string{}, "Specify dependencies to update in the format IDENTIFIER=SEMVER_VERSION (-p package=1.2.3)")
 
 	// Flag to specify file extensions to include in the search
 	updateCmd.Flags().StringArrayP("extension", "e", []string{".yaml", ".yml"}, "Specify file extensions to include in the search")

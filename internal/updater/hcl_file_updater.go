@@ -165,7 +165,7 @@ func (u *HclFileUpdater) processInlineDepupComment(line string, packages []Packa
 		}
 
 		// Look for version in the line content
-		versionMatches := VersionPattern.FindStringSubmatch(lineContent)
+		versionMatches := versionPattern.FindStringSubmatch(lineContent)
 		if len(versionMatches) <= 3 {
 			continue
 		}
@@ -201,7 +201,7 @@ func (u *HclFileUpdater) processPreviousLineDepupComment(prevLine, currentLine s
 	}
 
 	// Look for version in current line
-	versionMatches := VersionPattern.FindStringSubmatch(currentLine)
+	versionMatches := versionPattern.FindStringSubmatch(currentLine)
 	if len(versionMatches) <= 3 {
 		return currentLine, false
 	}
@@ -219,20 +219,35 @@ func (u *HclFileUpdater) processPreviousLineDepupComment(prevLine, currentLine s
 func (u *HclFileUpdater) updateVersion(line, packageName string, packages []Package, versionMatches []string) (string, bool) {
 	for _, pkg := range packages {
 		if pkg.Name == packageName {
+			// Extract version components by named regex groups
 			startQuote := versionMatches[1]
-			currentVersion := versionMatches[2]
-			endQuote := versionMatches[3]
+			major := versionMatches[2]
+			minor := versionMatches[3]
+			patch := versionMatches[4]
+			prerelease := versionMatches[5]
+			buildmetadata := versionMatches[6]
+			endQuote := versionMatches[7]
 
-			// If the versions are the same (ignoring constraints), no update needed
-			cleanVersion := regexp.MustCompile(`[>=~<^]+\s*`).ReplaceAllString(currentVersion, "")
-			if cleanVersion == pkg.Version {
+			// Compose current version
+			currentVersion := major + "." + minor + "." + patch
+			if prerelease != "" {
+				currentVersion += "-" + prerelease
+			}
+			if buildmetadata != "" {
+				currentVersion += "+" + buildmetadata
+			}
+
+			cleanCurrent := currentVersion
+			cleanTarget := pkg.Version
+
+			if cleanCurrent == cleanTarget {
 				return line, false
 			}
 
-			// Replace with new version, removing any constraints
+			// Replace using fully normalized target version
 			updatedLine := strings.Replace(
 				line,
-				versionMatches[0],
+				versionMatches[0], // entire match
 				startQuote+pkg.Version+endQuote,
 				1,
 			)
