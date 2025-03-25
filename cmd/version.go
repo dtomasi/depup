@@ -23,6 +23,8 @@ var versionCmd = &cobra.Command{
 		if short, _ := cmd.Flags().GetBool("short"); short {
 			// Print only the version number
 			fmt.Println(version)
+
+			return
 		}
 
 		// Print version information in a standardized format
