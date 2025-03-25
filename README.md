@@ -10,11 +10,17 @@
 ## Overview
 
 `depup` is a command-line tool designed to update dependency versions across configuration files.
-It automatically detects and updates version references in YAML files, making it easy to keep dependencies consistent across your projects.
+It automatically detects and updates version references in YAML and HCL files based on special comments.
+
+`depup` is **not** a package manager or dependency resolver. It is a simple utility to help manage
+version references in configuration files.
 
 ## Features
 
 - **Annotated Updates**: Uses special comments to identify update targets (`# depup package=name`)
+- **Semver native**: Supports [semantic versioning](https://semver.org/lang/de/) (e.g., `1.2.3`, `v1.2.3`, `1.2.3-beta.1`) \
+  Any valid semver string is supported. You  can check if your version is valid using official Semver provided [regex](https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string). \
+  Or on Regex101: https://regex101.com/r/vkijKf/1/
 - **Multiple Configuration Formats**:
     - YAML files (`.yaml`, `.yml`) for Docker Compose, Kubernetes manifests, etc.
     - HCL files (`.tf`, `.tfvars`, `.hcl`) for Terraform configurations
