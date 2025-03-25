@@ -1,12 +1,12 @@
 ## This is a simple example of a config file
-## Command: depup update --package postgres@13.4.0 --package redis@5.0.0 --package my-app@3.0.0 ./examples/simple/config.yaml
+## Command: depup update --package postgres=13.4.0 --package redis=5.0.0 --package my-app=3.0.0 ./examples/yaml/config.yaml
 version: '3'
 services:
   database:
     # depup package=postgres
-    image: postgres:13.3.0
+    image: postgres:14.6.0
   redis:
     # depup package=redis
     image: test:4.2.3
   app:
-    image: company/my-app:2.0.0 # depup package=my-app
+    image: company/my-app:0.0.2-rc.2 # depup package=my-app

@@ -1,11 +1,12 @@
 # terraform/main.tf - Example Terraform configuration for depup
+## Command: depup update --package aws-provider=5.92.0 --package azure-provider=4.24.0 --package aws-vpc-module=5.19.0 --package aws-s3-module=4.6.0 -e .tf ./examples/hcl/main.tf
 
 # Configure the AWS provider
-# depup package=aws-provider
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
+      // depup package=aws-provider
       version = "4.0.0"
     }
 
