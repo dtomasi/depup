@@ -192,3 +192,4 @@ Temporary Items
 
 ### Project
 depup
+!examples/**/.env
