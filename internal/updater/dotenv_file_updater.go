@@ -19,6 +19,7 @@ func NewDotEnvFileUpdater() *DotEnvFileUpdater {
 		supportedFileExtensions: map[string]struct{}{
 			".env":   {},
 			".env.*": {},
+			".*.env": {},
 		},
 		commentPattern: regexp.MustCompile(`#\s*depup\s+package=([^\s]+)`),
 	}
