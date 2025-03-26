@@ -105,6 +105,7 @@ func NewUpdater(options ...Option) *Updater {
 		updaters: []FileUpdater{
 			NewYamlFileUpdater(),
 			NewHclFileUpdater(),
+			NewDotEnvFileUpdater(),
 		},
 		// Default values
 		dryRun:         false,
@@ -216,9 +217,20 @@ func (u *Updater) Update(entrypoint string, packages []Package) error {
 // Returns true if the file should be processed, false otherwise
 func (u *Updater) isFileExtensionSupported(filePath string) bool {
 	fileExtension := strings.ToLower(filepath.Ext(filePath))
-	for _, ext := range u.fileExtensions {
-		if ext == fileExtension {
+	fileName := filepath.Base(filePath)
+
+	for _, pattern := range u.fileExtensions {
+		// First check exact extension match
+		if pattern == fileExtension {
 			return true
+		}
+
+		// Then check for glob pattern match
+		if strings.Contains(pattern, "*") || strings.Contains(pattern, "?") || strings.Contains(pattern, "[") {
+			matched, err := filepath.Match(pattern, fileName)
+			if err == nil && matched {
+				return true
+			}
 		}
 	}
 	return false

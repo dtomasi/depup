@@ -24,6 +24,7 @@ version references in configuration files.
 - **Multiple Configuration Formats**:
     - YAML files (`.yaml`, `.yml`) for Docker Compose, Kubernetes manifests, etc.
     - HCL files (`.tf`, `.tfvars`, `.hcl`) for Terraform configurations
+    - .env files (`.env`, `.env.local`, `.local.env`) for environment variables
     - Support for both inline and preceding line dependency comments
     - Works with different comment styles in HCL (`#` and `//`)
 - **Recursive Directory Scanning**: Process entire directory structures with a single command
@@ -154,6 +155,26 @@ depup update terraform/ --package vpc-module=3.19.0 --ext .tf
 ```
 
 By default, depup will recursively scan all directories. Use `--ext` flag to limit to specific file extensions.
+
+### .ENV File Examples
+
+#### Example: Environment Variables
+
+```env
+# depup package=postgres
+POSTGRES_VERSION=1.2.3
+
+REDIS_VERSION=4.0.0 # depup package=redis
+```
+
+Update the environment variable versions:
+
+```bash
+depup update .env --package postgres=15.4.0 --package redis=7.2.0
+```
+
+Both inline and preceding line comment styles are supported for .env files.
+
 
 ## Development
 

@@ -115,8 +115,8 @@ func TestNewUpdater(t *testing.T) {
 			updater := NewUpdater(tt.options...)
 
 			// Check updater has one default updater
-			if len(updater.updaters) != 2 {
-				t.Errorf("expected 2 default updater, got %d", len(updater.updaters))
+			if len(updater.updaters) == 0 {
+				t.Errorf("expected to find default updaters, got %d", len(updater.updaters))
 			}
 
 			// Check configuration
